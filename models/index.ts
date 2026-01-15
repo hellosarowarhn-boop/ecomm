@@ -74,7 +74,8 @@ export const initDb = async () => {
         return true;
     } catch (error) {
         console.error('Unable to connect to the database:', error);
-        return false;
+        // THROW the error so the API route can catch and display it
+        throw error;
     }
 };
 
