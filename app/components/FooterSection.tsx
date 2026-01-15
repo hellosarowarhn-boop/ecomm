@@ -23,7 +23,7 @@ export default function FooterSection({ settings }: FooterProps) {
                     <div className="text-gray-500 text-sm text-center">
                         <p>© {new Date().getFullYear()} {settings?.site_name}.</p>
                         <p>All rights reserved.</p>
-                        <p className="text-xs mt-1">Version 1.0</p>
+                        <p className="text-xs mt-1">Version 2.0</p>
                     </div>
                     <div className="flex gap-6 text-sm font-medium text-gray-400">
                         <Link href="#" className="hover:text-white transition-colors">Terms</Link>
