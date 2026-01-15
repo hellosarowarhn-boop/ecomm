@@ -25,8 +25,8 @@ export default function ComboDeal({ comboProduct, productA, productB, settings, 
                     </div>
 
                     <div className="flex flex-col md:flex-row items-start justify-center gap-8 md:gap-12 mb-12">
-                        <div className="flex-1 text-center bg-white/10 p-6 rounded-2xl backdrop-blur-sm w-full md:max-w-sm border border-white/10 hover:bg-white/20 transition-all">
-                            <h3 className="text-2xl font-bold mb-6 text-white h-16 flex items-center justify-center">{productA.name}</h3>
+                        <div className="flex-1 text-center bg-white/10 p-6 rounded-2xl backdrop-blur-sm w-full md:max-w-md border border-white/10 hover:bg-white/20 transition-all">
+                            <h3 className="text-2xl font-bold mb-6 text-white h-16 flex items-center justify-center line-clamp-2">{productA.name}</h3>
 
                             <div className="flex flex-wrap justify-center gap-3 mb-6">
                                 {getImages(productA).slice(0, 5).map((img, idx) => (
@@ -37,14 +37,14 @@ export default function ComboDeal({ comboProduct, productA, productB, settings, 
                             </div>
 
                             {productA.description && (
-                                <p className="text-sm text-purple-100 opacity-90 leading-relaxed min-h-[3rem]">{productA.description}</p>
+                                <p className="text-sm text-purple-100 opacity-90 leading-relaxed h-20 overflow-hidden line-clamp-4">{productA.description}</p>
                             )}
                         </div>
 
                         <div className="self-center text-6xl font-black text-yellow-400 animate-pulse drop-shadow-md select-none transform rotate-45 md:rotate-0">+</div>
 
-                        <div className="flex-1 text-center bg-white/10 p-6 rounded-2xl backdrop-blur-sm w-full md:max-w-sm border border-white/10 hover:bg-white/20 transition-all">
-                            <h3 className="text-2xl font-bold mb-6 text-white h-16 flex items-center justify-center">{productB.name}</h3>
+                        <div className="flex-1 text-center bg-white/10 p-6 rounded-2xl backdrop-blur-sm w-full md:max-w-md border border-white/10 hover:bg-white/20 transition-all">
+                            <h3 className="text-2xl font-bold mb-6 text-white h-16 flex items-center justify-center line-clamp-2">{productB.name}</h3>
 
                             <div className="flex flex-wrap justify-center gap-3 mb-6">
                                 {getImages(productB).slice(0, 5).map((img, idx) => (
@@ -55,7 +55,7 @@ export default function ComboDeal({ comboProduct, productA, productB, settings, 
                             </div>
 
                             {productB.description && (
-                                <p className="text-sm text-purple-100 opacity-90 leading-relaxed min-h-[3rem]">{productB.description}</p>
+                                <p className="text-sm text-purple-100 opacity-90 leading-relaxed h-20 overflow-hidden line-clamp-4">{productB.description}</p>
                             )}
                         </div>
                     </div>
