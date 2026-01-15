@@ -28,7 +28,11 @@ export async function POST(request: NextRequest) {
         const token = generateToken(admin);
 
         const response = NextResponse.json(
-            { success: true, message: 'Login successful' },
+            {
+                success: true,
+                message: 'Login successful',
+                role: admin.role
+            },
             { status: 200 }
         );
 

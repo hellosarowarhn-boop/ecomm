@@ -4,8 +4,8 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
-    // Protect admin routes (except login)
-    if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
+    // Protect admin and co-admin routes (except login)
+    if ((pathname.startsWith('/admin') || pathname.startsWith('/co-admin')) && !pathname.startsWith('/admin/login')) {
         const token = request.cookies.get('admin_token');
 
         if (!token) {
@@ -17,5 +17,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: '/admin/:path*',
+    matcher: ['/admin/:path*', '/co-admin/:path*'],
 };
