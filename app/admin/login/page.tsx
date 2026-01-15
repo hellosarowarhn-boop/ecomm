@@ -103,13 +103,7 @@ export default function AdminLoginPage() {
                             </button>
                         </form>
 
-                        <div className="mt-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
-                            <p className="text-sm text-gray-600">
-                                <strong>Default credentials:</strong><br />
-                                Email: admin@ecomstore.com<br />
-                                Password: admin123
-                            </p>
-                        </div>
+
                     </div>
                 </div>
             </div>

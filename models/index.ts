@@ -21,6 +21,8 @@ export const initDb = async () => {
             await Admin.create({
                 email: 'admin@ecomstore.com',
                 password: hashedPassword,
+                name: 'Super Admin',
+                role: 'super_admin',
             });
             console.log('Default admin created: admin@ecomstore.com / admin123');
         }

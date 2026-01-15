@@ -7,7 +7,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key';
 export interface AdminPayload {
     id: number;
     email: string;
-    role: 'admin';
+    role: 'super_admin' | 'co_admin';
+    name: string;
 }
 
 export const verifyAdmin = async (email: string, password: string): Promise<AdminPayload | null> => {
@@ -27,7 +28,8 @@ export const verifyAdmin = async (email: string, password: string): Promise<Admi
         return {
             id: admin.id,
             email: admin.email,
-            role: 'admin',
+            role: admin.role,
+            name: admin.name || 'Admin',
         };
     } catch (error) {
         console.error('Error verifying admin:', error);

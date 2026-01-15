@@ -5,6 +5,8 @@ class Admin extends Model {
     declare id: number;
     declare email: string;
     declare password: string;
+    declare name: string;
+    declare role: 'super_admin' | 'co_admin';
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
 }
@@ -23,6 +25,15 @@ Admin.init(
             validate: {
                 isEmail: true,
             },
+        },
+        name: {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+        },
+        role: {
+            type: DataTypes.ENUM('super_admin', 'co_admin'),
+            allowNull: false,
+            defaultValue: 'super_admin',
         },
         password: {
             type: DataTypes.STRING(255),
