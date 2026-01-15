@@ -38,14 +38,17 @@ export async function GET(request: NextRequest) {
             );
         } else {
             return NextResponse.json(
-                { error: 'Failed to initialize database' },
+                { error: 'Failed to initialize database (Reason: initDb returned false)' },
                 { status: 500 }
             );
         }
     } catch (error) {
         console.error('Database initialization error:', error);
         return NextResponse.json(
-            { error: 'Failed to initialize database', details: String(error) },
+            {
+                error: 'Failed to initialize database',
+                details: error instanceof Error ? error.message : String(error)
+            },
             { status: 500 }
         );
     }
