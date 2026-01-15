@@ -11,6 +11,7 @@ class Order extends Model {
     declare product_name_snapshot: string;
     declare price_snapshot: number;
     declare order_status: 'pending' | 'processing' | 'delivered_to_courier' | 'complete' | 'waiting' | 'canceled';
+    declare deleted_at: Date | null;
     declare readonly created_at: Date;
     declare readonly updatedAt: Date;
 }
@@ -53,6 +54,11 @@ Order.init(
         order_status: {
             type: DataTypes.ENUM('pending', 'processing', 'delivered_to_courier', 'complete', 'waiting', 'canceled'),
             defaultValue: 'pending',
+        },
+        deleted_at: {
+            type: DataTypes.DATE,
+            allowNull: true,
+            defaultValue: null,
         },
         created_at: {
             type: DataTypes.DATE,

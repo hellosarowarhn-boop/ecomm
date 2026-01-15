@@ -32,6 +32,12 @@ async function optimizeDatabase() {
                 query: 'CREATE INDEX IF NOT EXISTS idx_created_at ON orders(created_at)'
             },
             {
+                name: 'idx_deleted_at',
+                table: 'orders',
+                column: 'deleted_at',
+                query: 'CREATE INDEX IF NOT EXISTS idx_deleted_at ON orders(deleted_at)'
+            },
+            {
                 name: 'idx_status_created',
                 table: 'orders',
                 column: 'order_status, created_at',
@@ -67,7 +73,7 @@ async function optimizeDatabase() {
         console.log('   • Faster order filtering by status');
         console.log('   • Faster phone number searches');
         console.log('   • Faster date-based sorting');
-        console.log('   • Optimized combined status + date queries');
+        console.log('   • Optimized recycle bin (deleted_at) filtering');
 
     } catch (error) {
         console.error('❌ Database optimization failed:', error);

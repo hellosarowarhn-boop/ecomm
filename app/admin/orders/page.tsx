@@ -25,18 +25,21 @@ export default function AdminOrders() {
     const [searchPhone, setSearchPhone] = useState('');
     const [dateFilter, setDateFilter] = useState<string>('today'); // Default to today
     const [showFilters, setShowFilters] = useState(false); // Toggle for filters
+    const [view, setView] = useState<'active' | 'recycle_bin'>('active');
 
     useEffect(() => {
         fetchOrders();
-    }, []);
+    }, [view]);
 
     useEffect(() => {
         filterOrders();
     }, [statusFilter, searchPhone, dateFilter, orders]);
 
     const fetchOrders = async () => {
+        setLoading(true);
         try {
-            const res = await fetch('/api/orders');
+            const url = view === 'recycle_bin' ? '/api/orders?deleted=true' : '/api/orders';
+            const res = await fetch(url);
             const data = await res.json();
             setOrders(data);
             setFilteredOrders(data);
@@ -123,23 +126,51 @@ export default function AdminOrders() {
         }
     };
 
-    const handleDeleteOrder = async (orderId: number) => {
-        if (!confirm('Are you sure you want to delete this order? This action cannot be undone.')) return;
-
+    const handleSoftDelete = async (orderId: number) => {
+        if (!confirm('Are you sure you want to move this order to Recycle Bin?')) return;
         try {
-            const res = await fetch(`/api/orders?id=${orderId}`, {
-                method: 'DELETE',
-            });
-
+            const res = await fetch(`/api/orders?id=${orderId}&action=soft`, { method: 'DELETE' });
             if (res.ok) {
                 await fetchOrders();
-                alert('✅ Order deleted successfully!');
+                alert('✅ Order moved to Recycle Bin!');
+            } else {
+                alert('❌ Failed to move order');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('❌ Error moving order');
+        }
+    };
+
+    const handleRestore = async (orderId: number) => {
+        if (!confirm('Are you sure you want to restore this order?')) return;
+        try {
+            const res = await fetch(`/api/orders?id=${orderId}&action=restore`, { method: 'DELETE' });
+            if (res.ok) {
+                await fetchOrders();
+                alert('✅ Order restored successfully!');
+            } else {
+                alert('❌ Failed to restore order');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('❌ Error restoring order');
+        }
+    };
+
+    const handlePermanentDelete = async (orderId: number) => {
+        if (!confirm('⚠️ Are you sure you want to PERMANENTLY delete this order? This action CANNOT be undone.')) return;
+        try {
+            const res = await fetch(`/api/orders?id=${orderId}&action=permanent`, { method: 'DELETE' });
+            if (res.ok) {
+                await fetchOrders();
+                alert('✅ Order permanently deleted!');
             } else {
                 alert('❌ Failed to delete order');
             }
         } catch (error) {
-            console.error('Error deleting order:', error);
-            alert('❌ Failed to delete order');
+            console.error(error);
+            alert('❌ Error deleting order');
         }
     };
 
@@ -250,12 +281,28 @@ export default function AdminOrders() {
                         <h1 className="text-4xl font-bold text-gray-800 mb-2">Order Management</h1>
                         <p className="text-gray-600">View and manage all customer orders</p>
                     </div>
-                    <button
-                        onClick={handleExportCSV}
-                        className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-bold shadow-md flex items-center gap-2"
-                    >
-                        <span>📄</span> Export to CSV
-                    </button>
+                    <div className="flex flex-wrap gap-3">
+                        <div className="flex bg-white rounded-lg p-1 shadow-md border border-gray-200">
+                            <button
+                                onClick={() => { setView('active'); setDateFilter('today'); }}
+                                className={`px-4 py-2 rounded-md font-semibold transition-all ${view === 'active' ? 'bg-purple-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`}
+                            >
+                                📋 Active
+                            </button>
+                            <button
+                                onClick={() => { setView('recycle_bin'); setDateFilter('all'); }}
+                                className={`px-4 py-2 rounded-md font-semibold transition-all ${view === 'recycle_bin' ? 'bg-red-500 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`}
+                            >
+                                🗑️ Recycle Bin
+                            </button>
+                        </div>
+                        <button
+                            onClick={handleExportCSV}
+                            className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-bold shadow-md flex items-center gap-2"
+                        >
+                            <span>📄</span> Export CSV
+                        </button>
+                    </div>
                 </div>
 
                 {/* Date Filter (Always Visible) */}
@@ -282,8 +329,8 @@ export default function AdminOrders() {
                                 key={filter.value}
                                 onClick={() => setDateFilter(filter.value)}
                                 className={`px-6 py-4 rounded-xl font-bold transition-all border-2 ${dateFilter === filter.value
-                                        ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white border-purple-600 shadow-lg scale-105'
-                                        : 'bg-white text-gray-700 border-gray-200 hover:border-purple-300 hover:shadow-md'
+                                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white border-purple-600 shadow-lg scale-105'
+                                    : 'bg-white text-gray-700 border-gray-200 hover:border-purple-300 hover:shadow-md'
                                     }`}
                             >
                                 <div className="text-2xl mb-1">{filter.icon}</div>
@@ -370,15 +417,23 @@ export default function AdminOrders() {
                                                 <h3 className="text-xl font-bold text-gray-800 mb-1">
                                                     {order.customer_name}
                                                 </h3>
-                                                <p className="text-gray-600 text-sm">
-                                                    {new Date(order.created_at).toLocaleDateString('en-US', {
-                                                        year: 'numeric',
-                                                        month: 'long',
-                                                        day: 'numeric',
-                                                        hour: '2-digit',
-                                                        minute: '2-digit',
-                                                    })}
-                                                </p>
+                                                <div className="text-gray-600 text-sm flex flex-col">
+                                                    <span className="font-medium text-purple-600">
+                                                        {new Date(order.created_at).toLocaleString('en-US', {
+                                                            weekday: 'short',
+                                                            year: 'numeric',
+                                                            month: 'short',
+                                                            day: 'numeric'
+                                                        })}
+                                                    </span>
+                                                    <span>
+                                                        {new Date(order.created_at).toLocaleString('en-US', {
+                                                            hour: 'numeric',
+                                                            minute: '2-digit',
+                                                            hour12: true
+                                                        })}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                         <div className={`px-4 py-2 rounded-lg border-2 font-semibold flex items-center gap-2 ${getStatusColor(order.order_status)}`}>
@@ -414,21 +469,41 @@ export default function AdminOrders() {
                                     </div>
 
                                     <div className="flex gap-3">
-                                        <button
-                                            onClick={() => {
-                                                setSelectedOrder(order);
-                                                setShowModal(true);
-                                            }}
-                                            className="flex-1 px-6 py-3 gradient-primary text-white rounded-lg hover:shadow-lg transition-all font-semibold"
-                                        >
-                                            Update Status
-                                        </button>
-                                        <button
-                                            onClick={() => handleDeleteOrder(order.id)}
-                                            className="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-semibold"
-                                        >
-                                            Delete
-                                        </button>
+                                        {view === 'recycle_bin' ? (
+                                            <>
+                                                <button
+                                                    onClick={() => handleRestore(order.id)}
+                                                    className="flex-1 px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all font-semibold flex items-center justify-center gap-2"
+                                                >
+                                                    <span>♻️</span> Restore
+                                                </button>
+                                                <button
+                                                    onClick={() => handlePermanentDelete(order.id)}
+                                                    className="flex-1 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-semibold flex items-center justify-center gap-2"
+                                                >
+                                                    <span>🗑️</span> Delete Forever
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedOrder(order);
+                                                        setShowModal(true);
+                                                    }}
+                                                    className="flex-1 px-6 py-3 gradient-primary text-white rounded-lg hover:shadow-lg transition-all font-semibold"
+                                                >
+                                                    Update Status
+                                                </button>
+                                                <button
+                                                    onClick={() => handleSoftDelete(order.id)}
+                                                    className="px-6 py-3 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors font-semibold border border-red-200"
+                                                    title="Move to Recycle Bin"
+                                                >
+                                                    🗑️
+                                                </button>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
                             </div>

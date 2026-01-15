@@ -16,19 +16,27 @@ export async function GET(request: Request) {
         const phone = searchParams.get('phone');
         const limit = parseInt(searchParams.get('limit') || '1000'); // Default limit 1000
         const offset = parseInt(searchParams.get('offset') || '0');
+        const deleted = searchParams.get('deleted'); // 'true' for recycle bin
 
         const connection = await getConnection();
 
         let query = 'SELECT * FROM orders';
         let params: any[] = [];
 
-        if (phone) {
-            query += ' WHERE phone = ? ORDER BY created_at DESC LIMIT ? OFFSET ?';
-            params = [phone, limit, offset];
+        // Filter deleted/active orders
+        if (deleted === 'true') {
+            query += ' WHERE deleted_at IS NOT NULL';
         } else {
-            query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
-            params = [limit, offset];
+            query += ' WHERE deleted_at IS NULL';
         }
+
+        if (phone) {
+            query += ' AND phone = ?';
+            params.push(phone);
+        }
+
+        query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+        params.push(limit, offset);
 
         const [rows] = await connection.execute(query, params);
         await connection.end();
@@ -89,10 +97,20 @@ export async function DELETE(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
         const id = searchParams.get('id');
+        const action = searchParams.get('action'); // 'soft', 'restore', 'permanent'
 
         const connection = await getConnection();
 
-        await connection.execute('DELETE FROM orders WHERE id = ?', [id]);
+        if (action === 'restore') {
+            // Restore from recycle bin
+            await connection.execute('UPDATE orders SET deleted_at = NULL WHERE id = ?', [id]);
+        } else if (action === 'permanent') {
+            // Permanent delete
+            await connection.execute('DELETE FROM orders WHERE id = ?', [id]);
+        } else {
+            // Soft delete (move to recycle bin)
+            await connection.execute('UPDATE orders SET deleted_at = NOW() WHERE id = ?', [id]);
+        }
 
         await connection.end();
 
