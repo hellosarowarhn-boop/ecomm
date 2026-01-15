@@ -40,11 +40,26 @@ export default function AdminOrders() {
         try {
             const url = view === 'recycle_bin' ? '/api/orders?deleted=true' : '/api/orders';
             const res = await fetch(url);
-            const data = await res.json();
-            setOrders(data);
-            setFilteredOrders(data);
+
+            if (res.ok) {
+                const data = await res.json();
+                if (Array.isArray(data)) {
+                    setOrders(data);
+                    setFilteredOrders(data);
+                } else {
+                    console.error('Invalid orders format:', data);
+                    setOrders([]);
+                    setFilteredOrders([]);
+                }
+            } else {
+                console.error('Failed to fetch orders:', res.statusText);
+                setOrders([]);
+                setFilteredOrders([]);
+            }
         } catch (error) {
             console.error('Error fetching orders:', error);
+            setOrders([]);
+            setFilteredOrders([]);
         } finally {
             setLoading(false);
         }
