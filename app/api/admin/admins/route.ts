@@ -33,11 +33,16 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json();
-        const { name, email, password, role } = body;
+        let { name, email, password, role } = body;
 
         if (!email || !password) {
             return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
         }
+
+        // Normalize inputs
+        name = name?.trim();
+        email = email.trim().toLowerCase();
+        password = password.trim();
 
         const existingAdmin = await Admin.findOne({ where: { email } });
         if (existingAdmin) {

@@ -17,17 +17,22 @@ export async function PUT(
 
         const id = parseInt(idString);
         const body = await request.json();
-        const { name, email, password, role } = body;
+        let { name, email, password, role } = body;
 
         const adminToUpdate = await Admin.findByPk(id);
         if (!adminToUpdate) {
             return NextResponse.json({ error: 'Admin not found' }, { status: 404 });
         }
 
+        // Normalize inputs
+        if (name) name = name.trim();
+        if (email) email = email.trim().toLowerCase();
+
         // Prepare update data
         const updateData: any = { name, email, role };
+
         if (password && password.trim() !== '') {
-            updateData.password = await hashPassword(password);
+            updateData.password = await hashPassword(password.trim());
         }
 
         await adminToUpdate.update(updateData);

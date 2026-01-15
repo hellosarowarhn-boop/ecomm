@@ -3,7 +3,8 @@ import { verifyAdmin, generateToken } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
     try {
-        const { email, password } = await request.json();
+        const body = await request.json();
+        let { email, password } = body;
 
         if (!email || !password) {
             return NextResponse.json(
@@ -11,6 +12,9 @@ export async function POST(request: NextRequest) {
                 { status: 400 }
             );
         }
+
+        email = email.trim().toLowerCase();
+        password = password.trim();
 
         const admin = await verifyAdmin(email, password);
 
