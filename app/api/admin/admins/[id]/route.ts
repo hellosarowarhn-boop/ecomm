@@ -4,8 +4,9 @@ import { Admin } from '@/models';
 
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id: idString } = await params;
     try {
         const token = request.cookies.get('admin_token')?.value;
         const payload = token ? verifyToken(token) : null;
@@ -14,7 +15,7 @@ export async function PUT(
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
 
-        const id = parseInt(params.id);
+        const id = parseInt(idString);
         const body = await request.json();
         const { name, email, password, role } = body;
 
@@ -41,8 +42,9 @@ export async function PUT(
 
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id: idString } = await params;
     try {
         const token = request.cookies.get('admin_token')?.value;
         const payload = token ? verifyToken(token) : null;
@@ -51,7 +53,7 @@ export async function DELETE(
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
 
-        const id = parseInt(params.id);
+        const id = parseInt(idString);
 
         // Prevent self-deletion
         if (id === payload.id) {
