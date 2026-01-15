@@ -2,8 +2,8 @@ const { createServer } = require('http');
 const { parse } = require('url');
 const next = require('next');
 
-// Load environment variables
-require('dotenv').config({ path: './.env.local' });
+// Environment variables are provided by Hostinger deployment
+// No need to load from .env.local in production
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
