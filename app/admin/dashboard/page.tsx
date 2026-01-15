@@ -49,7 +49,17 @@ export default function AdminDashboard() {
         const fetchData = async () => {
             try {
                 const ordersRes = await fetch('/api/orders');
-                const orders: Order[] = await ordersRes.json();
+                let orders: Order[] = [];
+                if (ordersRes.ok) {
+                    const data = await ordersRes.json();
+                    if (Array.isArray(data)) {
+                        orders = data;
+                    } else {
+                        console.error('Invalid orders format:', data);
+                    }
+                } else {
+                    console.error('Failed to fetch orders:', ordersRes.statusText);
+                }
 
                 // Calculate order statistics
                 const stats: OrderStats = {
@@ -312,11 +322,11 @@ export default function AdminDashboard() {
                                         </div>
                                         <div>
                                             <span className={`px-4 py-2 rounded-full text-sm font-semibold ${order.order_status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                                    order.order_status === 'processing' ? 'bg-blue-100 text-blue-800' :
-                                                        order.order_status === 'delivered_to_courier' ? 'bg-purple-100 text-purple-800' :
-                                                            order.order_status === 'complete' ? 'bg-green-100 text-green-800' :
-                                                                order.order_status === 'waiting' ? 'bg-orange-100 text-orange-800' :
-                                                                    'bg-red-100 text-red-800'
+                                                order.order_status === 'processing' ? 'bg-blue-100 text-blue-800' :
+                                                    order.order_status === 'delivered_to_courier' ? 'bg-purple-100 text-purple-800' :
+                                                        order.order_status === 'complete' ? 'bg-green-100 text-green-800' :
+                                                            order.order_status === 'waiting' ? 'bg-orange-100 text-orange-800' :
+                                                                'bg-red-100 text-red-800'
                                                 }`}>
                                                 {order.order_status.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
                                             </span>

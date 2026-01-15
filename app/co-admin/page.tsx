@@ -49,7 +49,17 @@ export default function CoAdminDashboard() {
         const fetchData = async () => {
             try {
                 const ordersRes = await fetch('/api/orders');
-                const orders: Order[] = await ordersRes.json();
+                let orders: Order[] = [];
+                if (ordersRes.ok) {
+                    const data = await ordersRes.json();
+                    if (Array.isArray(data)) {
+                        orders = data;
+                    } else {
+                        console.error('Invalid orders format:', data);
+                    }
+                } else {
+                    console.error('Failed to fetch orders:', ordersRes.statusText);
+                }
 
                 // Calculate order statistics
                 const stats: OrderStats = {
