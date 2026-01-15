@@ -51,26 +51,21 @@ This will rebuild your site with the correct database connection!
 
 After the deployment completes with environment variables:
 
-### Option A: Via Hostinger File Manager
+### Option A: Via Browser (Easiest!)
 
-1. Go to **hPanel → File Manager**
-2. Navigate to the deployment directory
-3. Find `init-db.js`
-4. You'll need to run this via SSH or Node.js terminal
+1. **Deploy the site** (Step 1 above)
+2. **Wait for deployment to finish**
+3. **Visit this URL in your browser:**
+   `https://sunnah-shop.online/api/init-db`
+4. You should see: `{"success":true,"message":"Database initialized successfully..."}`
 
-### Option B: Via SSH (Recommended)
+### Option B: Via SSH (Advanced)
+
+If the browser method fails, you can use SSH, but you must use the internal API route via curl since `node init-db.js` requires TypeScript setup:
 
 ```bash
 ssh -p 65002 u796903731@82.25.83.153
-
-# Find your deployment directory (it might be in a different location)
-# Hostinger GitHub deployments are usually in a special directory
-# Check: ls -la ~/
-# Look for a directory related to your deployment
-
-# Once you find it, run:
-cd /path/to/deployment/directory
-node init-db.js
+curl http://localhost:3000/api/init-db
 ```
 
 ---
@@ -106,6 +101,10 @@ NODE_ENV = production
 ```
 
 6. **Click**: "Deploy" or "Save and deploy"
+7. **Initialize Database**:
+   - Wait for deployment to finish.
+   - Visit: `https://ilwashop.com/api/init-db`
+   - Check for success message.
 
 ---
 
@@ -215,27 +214,6 @@ No need to SSH in, no need to run commands manually. Hostinger watches your GitH
 4. **Test**: https://sunnah-shop.online
 5. **Setup Site 2** the same way
 6. **Initialize databases** for both sites via SSH
-
----
-
-## 💡 Finding Your Deployment Directory
-
-If you need to run `init-db.js` via SSH, the deployment directory might be in:
-
-```bash
-# Connect via SSH
-ssh -p 65002 u796903731@82.25.83.153
-
-# Check these locations:
-ls -la ~/domains/sunnah-shop.online/
-ls -la ~/public_html/
-ls -la ~/
-
-# Look for directories with your code
-# Once found, run:
-cd /path/to/deployment
-node init-db.js
-```
 
 ---
 

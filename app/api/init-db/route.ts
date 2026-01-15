@@ -7,29 +7,23 @@ export async function GET(request: NextRequest) {
         const success = await initDb();
 
         if (success) {
-            // Force reset admin password to ensure access
-            const hashedPassword = await bcrypt.hash('admin123', 10);
-            const [updated] = await Admin.update(
-                { password: hashedPassword },
-                { where: { email: 'admin@ecomstore.com' } }
-            );
+            // Security Fix: Only create admin if one doesn't exist.
+            // NEVER reset the password of an existing admin via this public route.
+            const existingAdmin = await Admin.findOne({ where: { email: 'admin@ecomstore.com' } });
 
             let msg = 'Database initialized successfully';
-            if (updated > 0) {
-                msg += '. Admin password reset to: admin123';
+
+            if (!existingAdmin) {
+                const hashedPassword = await bcrypt.hash('admin123', 10);
+                await Admin.create({
+                    email: 'admin@ecomstore.com',
+                    password: hashedPassword,
+                    name: 'Super Admin',
+                    role: 'super_admin',
+                });
+                msg += '. Default admin created: admin@ecomstore.com / admin123';
             } else {
-                // If update returned 0, maybe user doesn't exist despite initDb?
-                // initDb should have created it.
-                // Or maybe email is different?
-                // Let's ensure it exists.
-                const count = await Admin.count({ where: { email: 'admin@ecomstore.com' } });
-                if (count === 0) {
-                    await Admin.create({
-                        email: 'admin@ecomstore.com',
-                        password: hashedPassword,
-                    });
-                    msg += '. Admin account recreated.';
-                }
+                msg += '. Admin account already exists (password unchanged).';
             }
 
             return NextResponse.json(
