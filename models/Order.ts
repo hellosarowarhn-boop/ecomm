@@ -66,6 +66,24 @@ Order.init(
         timestamps: true,
         createdAt: 'created_at',
         updatedAt: 'updatedAt',
+        indexes: [
+            {
+                name: 'idx_order_status',
+                fields: ['order_status'],
+            },
+            {
+                name: 'idx_phone',
+                fields: ['phone'],
+            },
+            {
+                name: 'idx_created_at',
+                fields: ['created_at'],
+            },
+            {
+                name: 'idx_status_created',
+                fields: ['order_status', 'created_at'],
+            },
+        ],
     }
 );
 

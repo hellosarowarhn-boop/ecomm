@@ -14,6 +14,8 @@ export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
         const phone = searchParams.get('phone');
+        const limit = parseInt(searchParams.get('limit') || '1000'); // Default limit 1000
+        const offset = parseInt(searchParams.get('offset') || '0');
 
         const connection = await getConnection();
 
@@ -21,10 +23,11 @@ export async function GET(request: Request) {
         let params: any[] = [];
 
         if (phone) {
-            query += ' WHERE phone = ? ORDER BY created_at DESC';
-            params = [phone];
+            query += ' WHERE phone = ? ORDER BY created_at DESC LIMIT ? OFFSET ?';
+            params = [phone, limit, offset];
         } else {
-            query += ' ORDER BY created_at DESC';
+            query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+            params = [limit, offset];
         }
 
         const [rows] = await connection.execute(query, params);

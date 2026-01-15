@@ -23,6 +23,8 @@ export default function AdminOrders() {
     const [showModal, setShowModal] = useState(false);
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [searchPhone, setSearchPhone] = useState('');
+    const [dateFilter, setDateFilter] = useState<string>('today'); // Default to today
+    const [showFilters, setShowFilters] = useState(false); // Toggle for filters
 
     useEffect(() => {
         fetchOrders();
@@ -30,7 +32,7 @@ export default function AdminOrders() {
 
     useEffect(() => {
         filterOrders();
-    }, [statusFilter, searchPhone, orders]);
+    }, [statusFilter, searchPhone, dateFilter, orders]);
 
     const fetchOrders = async () => {
         try {
@@ -45,8 +47,38 @@ export default function AdminOrders() {
         }
     };
 
+    const isToday = (dateString: string) => {
+        const orderDate = new Date(dateString);
+        const today = new Date();
+        return orderDate.toDateString() === today.toDateString();
+    };
+
+    const isThisWeek = (dateString: string) => {
+        const orderDate = new Date(dateString);
+        const today = new Date();
+        const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+        return orderDate >= weekAgo && orderDate <= today;
+    };
+
+    const isThisMonth = (dateString: string) => {
+        const orderDate = new Date(dateString);
+        const today = new Date();
+        return orderDate.getMonth() === today.getMonth() &&
+            orderDate.getFullYear() === today.getFullYear();
+    };
+
     const filterOrders = () => {
         let filtered = [...orders];
+
+        // Filter by date (default: today)
+        if (dateFilter === 'today') {
+            filtered = filtered.filter(order => isToday(order.created_at));
+        } else if (dateFilter === 'week') {
+            filtered = filtered.filter(order => isThisWeek(order.created_at));
+        } else if (dateFilter === 'month') {
+            filtered = filtered.filter(order => isThisMonth(order.created_at));
+        }
+        // 'all' shows all orders
 
         // Filter by status
         if (statusFilter !== 'all') {
@@ -226,48 +258,85 @@ export default function AdminOrders() {
                     </button>
                 </div>
 
-                {/* Filters and Search */}
+                {/* Date Filter (Always Visible) */}
                 <div className="bg-white rounded-xl shadow-lg p-6">
-                    <div className="grid md:grid-cols-2 gap-6">
-                        {/* Status Filter */}
-                        <div>
-                            <label className="block text-gray-700 font-semibold mb-3">Filter by Status</label>
-                            <select
-                                value={statusFilter}
-                                onChange={(e) => setStatusFilter(e.target.value)}
-                                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none font-semibold text-gray-700 bg-white cursor-pointer hover:border-purple-300 transition-all"
-                            >
-                                <option value="all">All Orders ({orders.length})</option>
-                                {['pending', 'processing', 'delivered_to_courier', 'complete', 'waiting', 'canceled'].map((status) => (
-                                    <option key={status} value={status}>
-                                        {formatStatus(status)} ({orders.filter(o => o.order_status === status).length})
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-xl font-bold text-gray-800">📅 Date Filter</h2>
+                        <button
+                            onClick={() => setShowFilters(!showFilters)}
+                            className="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-all font-semibold flex items-center gap-2"
+                        >
+                            {showFilters ? '▼' : '▶'} More Filters
+                        </button>
+                    </div>
 
-                        {/* Phone Search */}
-                        <div>
-                            <label className="block text-gray-700 font-semibold mb-3">Search by Phone Number</label>
-                            <div className="flex gap-3">
-                                <input
-                                    type="text"
-                                    value={searchPhone}
-                                    onChange={(e) => setSearchPhone(e.target.value)}
-                                    className="flex-1 px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
-                                    placeholder="Enter phone number..."
-                                />
-                                {searchPhone && (
-                                    <button
-                                        onClick={() => setSearchPhone('')}
-                                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
+                    {/* Date Filter Buttons */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {[
+                            { value: 'today', label: '📆 Today', icon: '🔥' },
+                            { value: 'week', label: '📅 This Week', icon: '📊' },
+                            { value: 'month', label: '📆 This Month', icon: '📈' },
+                            { value: 'all', label: '🗂️ All Time', icon: '∞' }
+                        ].map((filter) => (
+                            <button
+                                key={filter.value}
+                                onClick={() => setDateFilter(filter.value)}
+                                className={`px-6 py-4 rounded-xl font-bold transition-all border-2 ${dateFilter === filter.value
+                                        ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white border-purple-600 shadow-lg scale-105'
+                                        : 'bg-white text-gray-700 border-gray-200 hover:border-purple-300 hover:shadow-md'
+                                    }`}
+                            >
+                                <div className="text-2xl mb-1">{filter.icon}</div>
+                                <div className="text-sm">{filter.label}</div>
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Collapsible Filters */}
+                    {showFilters && (
+                        <div className="mt-6 pt-6 border-t-2 border-gray-200">
+                            <div className="grid md:grid-cols-2 gap-6">
+                                {/* Status Filter */}
+                                <div>
+                                    <label className="block text-gray-700 font-semibold mb-3">Filter by Status</label>
+                                    <select
+                                        value={statusFilter}
+                                        onChange={(e) => setStatusFilter(e.target.value)}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none font-semibold text-gray-700 bg-white cursor-pointer hover:border-purple-300 transition-all"
                                     >
-                                        Clear
-                                    </button>
-                                )}
+                                        <option value="all">All Orders ({orders.length})</option>
+                                        {['pending', 'processing', 'delivered_to_courier', 'complete', 'waiting', 'canceled'].map((status) => (
+                                            <option key={status} value={status}>
+                                                {formatStatus(status)} ({orders.filter(o => o.order_status === status).length})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* Phone Search */}
+                                <div>
+                                    <label className="block text-gray-700 font-semibold mb-3">Search by Phone Number</label>
+                                    <div className="flex gap-3">
+                                        <input
+                                            type="text"
+                                            value={searchPhone}
+                                            onChange={(e) => setSearchPhone(e.target.value)}
+                                            className="flex-1 px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                                            placeholder="Enter phone number..."
+                                        />
+                                        {searchPhone && (
+                                            <button
+                                                onClick={() => setSearchPhone('')}
+                                                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
+                                            >
+                                                Clear
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Results Count */}
                     <div className="mt-4 pt-4 border-t border-gray-200">
