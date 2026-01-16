@@ -22,6 +22,7 @@ export default function OrderForm({ products, selectedProduct, setSelectedProduc
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [orderDetails, setOrderDetails] = useState<{ id: number; name: string; price: number; phone: string } | null>(null);
     const [agreedToTerms, setAgreedToTerms] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -81,43 +82,80 @@ export default function OrderForm({ products, selectedProduct, setSelectedProduc
             <div className="container mx-auto px-4">
                 <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden">
                     <div className="bg-gray-900 p-6 text-white text-center">
-                        <h2 className="text-2xl font-bold">Secure Checkout</h2>
+                        <h2 className="text-2xl md:text-3xl font-black mb-2 uppercase tracking-wide">অর্ডার করুন</h2>
+                        <p className="text-sm md:text-base font-medium opacity-90">অর্ডার করতে আপনার নাম, মোবাইল নাম্বার ও ঠিকানা লিখুন</p>
                     </div>
                     <div className="p-8">
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                            {products.map(p => (
-                                <button
-                                    key={p.id}
-                                    onClick={() => setSelectedProduct(p)}
-                                    className={`p-4 rounded-xl border-2 text-left transition-all ${selectedProduct?.id === p.id
-                                        ? 'border-purple-600 bg-purple-50 ring-1 ring-purple-600'
-                                        : 'border-gray-200 hover:border-purple-300'
-                                        }`}
-                                >
-                                    <div className="font-bold text-gray-900">{p.name}</div>
-                                    <div className="text-purple-600 font-bold">৳{p.offer_price.toFixed(2)}</div>
-                                    {p.type === 'combo' && <span className="text-xs text-yellow-600 font-bold">★ Best Value</span>}
-                                </button>
-                            ))}
-                        </div>
-
+                        {/* Selected Product Display / Dropdown */}
                         {selectedProduct && (
-                            <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl mb-8">
-                                <div className="w-20 h-20 bg-white rounded-lg border border-gray-200 flex items-center justify-center overflow-hidden" style={{ minWidth: '80px' }}>
-                                    {getImages(selectedProduct)[0]?.url ? (
-                                        <img src={getImages(selectedProduct)[0].url} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <span className="text-2xl">📦</span>
-                                    )}
-                                </div>
-                                <div className="flex-1">
-                                    <h3 className="font-bold text-gray-900">{selectedProduct.name}</h3>
-                                    <p className="text-sm text-gray-500">{selectedProduct.bottle_quantity} items included</p>
-                                </div>
-                                <div className="text-right">
-                                    <div className="text-2xl font-black text-gray-900">৳{selectedProduct.offer_price.toFixed(2)}</div>
-                                    <div className="text-sm text-gray-400 line-through">৳{selectedProduct.original_price.toFixed(2)}</div>
-                                </div>
+                            <div className="relative mb-8">
+                                <label className="block font-bold text-gray-700 mb-2">Selected Product</label>
+                                {!isDropdownOpen ? (
+                                    <div
+                                        onClick={() => setIsDropdownOpen(true)}
+                                        className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border-2 border-gray-200 cursor-pointer hover:border-purple-600 transition-all relative"
+                                    >
+                                        <div className="w-20 h-20 bg-white rounded-lg border border-gray-200 flex items-center justify-center overflow-hidden" style={{ minWidth: '80px' }}>
+                                            {getImages(selectedProduct)[0]?.url ? (
+                                                <img src={getImages(selectedProduct)[0].url} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <span className="text-2xl">📦</span>
+                                            )}
+                                        </div>
+                                        <div className="flex-1">
+                                            <h3 className="font-bold text-gray-900">{selectedProduct.name}</h3>
+                                            <p className="text-sm text-gray-500">{selectedProduct.bottle_quantity} items included</p>
+                                        </div>
+                                        <div className="text-right mr-8">
+                                            <div className="text-2xl font-black text-gray-900">৳{selectedProduct.offer_price.toFixed(2)}</div>
+                                            <div className="text-sm text-gray-400 line-through">৳{selectedProduct.original_price.toFixed(2)}</div>
+                                        </div>
+                                        <div className="absolute top-1/2 right-4 -translate-y-1/2 text-gray-400">
+                                            ▼
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="bg-white rounded-xl border-2 border-purple-600 overflow-hidden shadow-xl animate-in fade-in zoom-in-95 duration-200">
+                                        <div className="flex justify-between items-center p-4 bg-gray-50 border-b border-gray-100">
+                                            <span className="font-bold text-gray-800">Select a Product</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => setIsDropdownOpen(false)}
+                                                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 hover:bg-red-100 hover:text-red-600 transition-all font-bold text-gray-500"
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                        <div className="max-h-96 overflow-y-auto p-2 space-y-2 bg-gray-50/50">
+                                            {products.map(p => (
+                                                <div
+                                                    key={p.id}
+                                                    onClick={() => { setSelectedProduct(p); setIsDropdownOpen(false); }}
+                                                    className={`p-3 flex items-center gap-4 cursor-pointer rounded-xl border transition-all hover:shadow-md ${selectedProduct?.id === p.id
+                                                        ? 'bg-purple-50 border-purple-200 shadow-sm ring-1 ring-purple-100'
+                                                        : 'bg-white border-gray-100 hover:border-purple-200'
+                                                        }`}
+                                                >
+                                                    <div className="w-16 h-16 bg-white rounded-lg border border-gray-200 flex items-center justify-center overflow-hidden shrink-0">
+                                                        {getImages(p)[0]?.url ? (
+                                                            <img src={getImages(p)[0].url} className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            <span className="text-xl">📦</span>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <div className="font-bold text-gray-900">{p.name}</div>
+                                                        <div className="text-purple-600 font-bold">৳{p.offer_price.toFixed(2)}</div>
+                                                        {p.type === 'combo' && <span className="text-xs text-yellow-600 font-bold">★ Best Value</span>}
+                                                    </div>
+                                                    {selectedProduct?.id === p.id && (
+                                                        <span className="text-purple-600 font-bold">✓</span>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -139,7 +177,7 @@ export default function OrderForm({ products, selectedProduct, setSelectedProduc
                                 <textarea required value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-600 outline-none" rows={3} placeholder="Full Address" />
                             </div>
                             <button type="submit" className="w-full py-4 bg-gray-900 text-white rounded-xl font-bold text-xl hover:bg-black transition-all shadow-lg mt-6">
-                                Place Order - Cash on Delivery
+                                Place Order
                             </button>
                         </form>
                     </div>

@@ -1,3 +1,24 @@
+# ⚠️ AI AGENT NOTICE - READ BEFORE EDITING ⚠️
+
+**CRITICAL: MULTI-SITE DEPLOYMENT ARCHITECTURE**
+
+This repository is deployed to **TWO HOSTINGER SITES** simultaneously:
+1. `sunnah-shop.online`
+2. `ilwashop.com`
+
+**DO NOT** hardcode site-specific values (like site names, phone numbers, or database credentials) in the code.
+- **ALWAYS** use Environment Variables for site-specific configuration.
+- **ALWAYS** check `SITE_CREDENTIALS.md` (if available locally) or `HOSTINGER_GITHUB_DEPLOYMENT.md` before making architectural changes.
+
+**Deployment Workflow:**
+1. Code is pushed to `main` branch.
+2. Hostinger automatically builds and deploys to **BOTH** sites.
+3. Each site connects to its own database via unique Environment Variables defined in Hostinger hPanel.
+
+**FAILURE TO FOLLOW THIS WILL BREAK PRODUCTION FOR ONE OR BOTH SITES.**
+
+---
+
 # E-Commerce Landing Website
 
 A full-stack e-commerce website built with Next.js, MySQL, Sequelize ORM, and Tailwind CSS.

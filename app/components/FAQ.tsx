@@ -17,7 +17,7 @@ export default function FAQ({ settings }: FAQProps) {
         <section className="py-20 bg-sky-50">
             <div className="container mx-auto px-4 max-w-3xl">
                 <h2 className="text-4xl font-black text-center mb-12 text-gray-900 tracking-tight">
-                    Frequently Asked <span className="text-purple-600">Questions</span>
+                    জিজ্ঞাসিত <span className="text-purple-600">প্রশ্নাবলী</span>
                 </h2>
                 <div className="space-y-4">
                     {activeFaqs.map((faq, idx) => (

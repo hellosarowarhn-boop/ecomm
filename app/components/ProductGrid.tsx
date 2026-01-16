@@ -38,7 +38,7 @@ export default function ProductGrid({ productA, productB, settings, onSelect }: 
     };
 
     return (
-        <section className="bg-rose-50 py-20">
+        <section className="bg-[#FAFFFF] py-20">
             <div className="container mx-auto px-4">
                 <div className="grid lg:grid-cols-2 gap-8 items-start">
                     {[productA, productB].map(product => product && (
@@ -52,7 +52,7 @@ export default function ProductGrid({ productA, productB, settings, onSelect }: 
                                 <div className="text-2xl font-bold text-gray-900">৳{product.offer_price.toFixed(2)}</div>
                                 <button
                                     onClick={() => onSelect(product)}
-                                    className="w-full py-3 bg-white border-2 border-gray-900 text-gray-900 rounded-xl font-bold hover:bg-gray-900 hover:text-white transition-all shadow-sm"
+                                    className="w-full py-3 bg-white border-2 border-gray-900 text-gray-900 rounded-xl font-bold hover:bg-gray-900 hover:text-white hover:-translate-y-0.5 active:scale-95 transition-all duration-300 shadow-sm hover:shadow-lg"
                                 >
                                     {settings?.product_button_text || 'Order Now'}
                                 </button>

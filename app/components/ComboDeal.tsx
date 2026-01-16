@@ -15,9 +15,9 @@ export default function ComboDeal({ comboProduct, productA, productB, settings, 
     if (!comboProduct || !productA || !productB) return null;
 
     return (
-        <section className="bg-blue-50 py-20">
+        <section className="bg-gradient-to-br from-purple-700 to-blue-800 py-20">
             <div className="container mx-auto px-4">
-                <div className="bg-gradient-to-br from-purple-700 to-blue-800 rounded-3xl p-8 md:p-12 text-white shadow-2xl relative overflow-hidden">
+                <div className="text-white relative overflow-hidden">
                     <div className="relative z-10 text-center mb-10">
                         <span className="bg-yellow-400 text-gray-900 font-bold px-4 py-1 rounded-full text-sm inline-block mb-4">BEST DEAL</span>
                         <h2 className="text-4xl md:text-5xl font-black mb-4">{comboProduct.name}</h2>
@@ -25,13 +25,20 @@ export default function ComboDeal({ comboProduct, productA, productB, settings, 
                     </div>
 
                     <div className="flex flex-col md:flex-row items-start justify-center gap-8 md:gap-12 mb-12">
-                        <div className="flex-1 text-center bg-white/10 p-6 rounded-2xl backdrop-blur-sm w-full md:max-w-md border border-white/10 hover:bg-white/20 transition-all">
+                        <div className="flex-1 text-center bg-white/10 p-6 rounded-2xl backdrop-blur-sm w-full md:max-w-xl border border-white/10 hover:bg-white/20 transition-all">
                             <h3 className="text-2xl font-bold mb-6 text-white h-16 flex items-center justify-center line-clamp-2">{productA.name}</h3>
 
-                            <div className="flex flex-wrap justify-center gap-3 mb-6">
+                            <div className="flex flex-wrap justify-center gap-4 mb-6">
                                 {getImages(productA).slice(0, 5).map((img, idx) => (
-                                    <div key={idx} className="w-20 h-20 bg-white rounded-lg overflow-hidden shadow-md">
-                                        <img src={img.url || ''} className="w-full h-full object-cover" alt={img.name || productA.name} />
+                                    <div key={idx} className="flex flex-col gap-2 w-20">
+                                        <div className="w-20 h-20 bg-white rounded-lg overflow-hidden shadow-md">
+                                            <img src={img.url || ''} className="w-full h-full object-cover" alt={img.name || productA.name} />
+                                        </div>
+                                        {img.name && (
+                                            <p className="text-center text-[10px] font-medium text-white/90 bg-white/10 rounded px-1 truncate w-full">
+                                                {img.name}
+                                            </p>
+                                        )}
                                     </div>
                                 ))}
                             </div>
@@ -43,13 +50,20 @@ export default function ComboDeal({ comboProduct, productA, productB, settings, 
 
                         <div className="self-center text-6xl font-black text-yellow-400 animate-pulse drop-shadow-md select-none transform rotate-45 md:rotate-0">+</div>
 
-                        <div className="flex-1 text-center bg-white/10 p-6 rounded-2xl backdrop-blur-sm w-full md:max-w-md border border-white/10 hover:bg-white/20 transition-all">
+                        <div className="flex-1 text-center bg-white/10 p-6 rounded-2xl backdrop-blur-sm w-full md:max-w-xl border border-white/10 hover:bg-white/20 transition-all">
                             <h3 className="text-2xl font-bold mb-6 text-white h-16 flex items-center justify-center line-clamp-2">{productB.name}</h3>
 
-                            <div className="flex flex-wrap justify-center gap-3 mb-6">
+                            <div className="flex flex-wrap justify-center gap-4 mb-6">
                                 {getImages(productB).slice(0, 5).map((img, idx) => (
-                                    <div key={idx} className="w-20 h-20 bg-white rounded-lg overflow-hidden shadow-md">
-                                        <img src={img.url || ''} className="w-full h-full object-cover" alt={img.name || productB.name} />
+                                    <div key={idx} className="flex flex-col gap-2 w-20">
+                                        <div className="w-20 h-20 bg-white rounded-lg overflow-hidden shadow-md">
+                                            <img src={img.url || ''} className="w-full h-full object-cover" alt={img.name || productB.name} />
+                                        </div>
+                                        {img.name && (
+                                            <p className="text-center text-[10px] font-medium text-white/90 bg-white/10 rounded px-1 truncate w-full">
+                                                {img.name}
+                                            </p>
+                                        )}
                                     </div>
                                 ))}
                             </div>
@@ -63,7 +77,7 @@ export default function ComboDeal({ comboProduct, productA, productB, settings, 
                     <div className="text-center mt-8">
                         <button
                             onClick={() => onSelect(comboProduct)}
-                            className="w-full md:w-auto px-12 py-5 bg-white text-gray-900 rounded-xl font-bold text-xl hover:bg-gray-50 transition-all shadow-xl"
+                            className="w-full md:w-auto px-12 py-5 bg-white text-gray-900 rounded-xl font-bold text-xl hover:bg-gray-50 hover:-translate-y-1 hover:shadow-2xl active:scale-95 transition-all duration-300 shadow-xl"
                         >
                             {settings?.combo_button_text || 'Get This Combo Deal'} - ৳{comboProduct.offer_price.toFixed(2)}
                         </button>
