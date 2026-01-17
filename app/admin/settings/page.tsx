@@ -195,7 +195,7 @@ export default function AdminSettings() {
                     onChange={onChange}
                     className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:border-purple-500 outline-none text-gray-600 text-sm"
                     placeholder={placeholder || "Image URL"}
-                    readOnly // Prefer upload, but user can see URL
+                    // readOnly removed to allow manual URL entry
                 />
                 <label className={`cursor-pointer px-4 py-3 ${uploading ? 'bg-gray-300' : 'bg-purple-600 hover:bg-purple-700'} text-white font-bold rounded-lg transition-colors flex items-center justify-center min-w-[100px]`}>
                     <input type="file" accept="image/*" className="hidden" onChange={onUpload} disabled={uploading} />
@@ -365,7 +365,7 @@ export default function AdminSettings() {
                                                             onChange={(e) => handleHeroImageChange(idx, e.target.value)}
                                                             className="flex-1 px-3 py-2 border border-gray-300 rounded focus:border-purple-500 outline-none text-sm"
                                                             placeholder="Image URL"
-                                                            readOnly
+                                                            // readOnly removed
                                                         />
                                                         <label className="cursor-pointer px-3 py-2 bg-purple-100 text-purple-700 hover:bg-purple-200 font-bold rounded text-sm transition-colors">
                                                             <input

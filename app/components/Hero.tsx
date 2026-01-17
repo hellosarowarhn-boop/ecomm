@@ -21,26 +21,26 @@ export default function Hero({ settings, onShopClick }: HeroProps) {
     }, [heroImages.length]);
 
     return (
-        <section className="relative pt-36 pb-20 overflow-hidden bg-[#FCFAF5]">
+        <section className="relative pt-28 md:pt-36 pb-12 md:pb-20 overflow-hidden bg-[#FCFAF5]">
             <div className="container mx-auto px-4 relative z-10">
-                <div className="grid md:grid-cols-2 gap-12 items-center">
-                    <div className="text-center md:text-left">
-                        <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tight text-gray-900 leading-tight">
+                <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                    <div className="text-center md:text-left order-2 md:order-1">
+                        <h1 className="text-4xl md:text-5xl lg:text-7xl font-black mb-4 md:mb-6 tracking-tight text-gray-900 leading-tight">
                             {settings?.hero_title}
                         </h1>
-                        <p className="text-lg text-gray-600 mb-8 max-w-lg mx-auto md:mx-0">
+                        <p className="text-base md:text-lg text-gray-600 mb-6 md:mb-8 max-w-lg mx-auto md:mx-0">
                             {settings?.hero_description}
                         </p>
                         <button
                             onClick={onShopClick}
-                            className="px-10 py-5 bg-gray-900 text-white rounded-full font-bold text-lg hover:shadow-2xl hover:-translate-y-1 active:scale-95 transition-all duration-300 shadow-xl shadow-purple-900/20"
+                            className="px-8 py-4 md:px-10 md:py-5 bg-gray-900 text-white rounded-full font-bold text-base md:text-lg hover:shadow-2xl hover:-translate-y-1 active:scale-95 transition-all duration-300 shadow-xl shadow-purple-900/20"
                         >
                             {settings?.hero_button_text}
                         </button>
                     </div>
 
-                    <div className="relative">
-                        <div className="aspect-[4/3] bg-white rounded-3xl overflow-hidden shadow-2xl mb-6 relative border-4 border-white">
+                    <div className="relative order-1 md:order-2">
+                        <div className="aspect-[4/3] bg-white rounded-3xl overflow-hidden shadow-2xl mb-4 md:mb-6 relative border-4 border-white">
                             {heroImages.length > 0 ? (
                                 <div className="w-full h-full relative">
                                     {heroImages.map((img, idx) => (
